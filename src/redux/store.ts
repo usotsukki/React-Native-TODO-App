@@ -11,14 +11,12 @@ import {
   REGISTER,
 } from 'redux-persist';
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
-import {appSlice} from './appReducer';
-
+import { appSlice } from './appReducer';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['app'],
   stateReconciler: autoMergeLevel1,
 };
 

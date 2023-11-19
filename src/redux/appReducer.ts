@@ -1,11 +1,25 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { RootState } from './store';
 
-type Status = 'todo' | 'doing' | 'done';
+export enum Status {
+  planned = 'planned',
+  inprogress = 'inprogress',
+  done = 'done',
+}
 
-interface TodoItem {
-  id: number;
+export enum Categories {
+  Task = 'Task',
+  Event = 'Event',
+  Goal = 'Goal',
+}
+
+export interface TodoItem {
+  id: string;
   title: string;
-  end_date: string;
+  date: string;
+  time: string;
+  category: keyof typeof Categories;
+  notes: string;
   status: Status;
 }
 
@@ -24,12 +38,12 @@ export const appSlice = createSlice({
     addTodo: (state: InitialState, action: PayloadAction<TodoItem>) => {
       state.todoList = [...state.todoList, action.payload];
     },
-    removeTodo: (state: InitialState, action: PayloadAction<number>) => {
+    removeTodo: (state: InitialState, action: PayloadAction<string>) => {
       state.todoList = state.todoList.filter(e => e.id !== action.payload);
     },
     changeStatus: (
       state: InitialState,
-      action: PayloadAction<{ id: number; status: Status }>,
+      action: PayloadAction<{ id: string; status: Status }>,
     ) => {
       const { id, status } = action.payload;
       state.todoList = state.todoList.map(e =>
@@ -38,3 +52,6 @@ export const appSlice = createSlice({
     },
   },
 });
+
+export const { addTodo, removeTodo, changeStatus } = appSlice.actions;
+export const selectTodoList = (store: RootState) => store.todoList;
