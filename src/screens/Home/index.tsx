@@ -3,12 +3,12 @@ import { View, Text, ScrollView } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import { ROUTES, RootParamList } from '../../navigation';
-import { COLORS } from '../../theme';
+import { COLORS, DATE_FORMAT } from '../../theme';
 import { BackButton, ButtonPrimary, HeaderBackground } from '../../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import moment from 'moment';
 import { useAppSelector } from '../../redux/hooks';
-import { Status, selectTodoList } from '../../redux/appReducer';
+import { Status, selectTodoListByDate } from '../../redux/appReducer';
 import TodoItem from '../../components/TodoItem';
 
 const styles = ScaledSheet.create({
@@ -60,12 +60,27 @@ const styles = ScaledSheet.create({
     marginVertical: '20@ms',
     marginHorizontal: '20@ms',
   },
+  placeholderContainer: {
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 24,
+    paddingVertical: '30@ms',
+    marginHorizontal: '20@ms',
+  },
+  placeholder: {
+    fontSize: '16@ms',
+    fontWeight: '700',
+    color: COLORS.purple,
+  },
 });
 
 export default ({
   navigation,
 }: StackScreenProps<RootParamList, typeof ROUTES.HOME>) => {
-  const todoList = useAppSelector(selectTodoList);
+  const todoList = useAppSelector(
+    selectTodoListByDate(moment().format(DATE_FORMAT)),
+  );
   const pendingTasks = todoList.filter(item => item.status !== Status.done);
   const completedTasks = todoList.filter(item => item.status === Status.done);
 
@@ -84,32 +99,43 @@ export default ({
         <View style={styles.headerContainer}>
           <View style={styles.headerTop}>
             <View style={{ flex: 0.2 }}>
-              <BackButton />
+              <BackButton
+                onPress={() => navigation.navigate(ROUTES.TASK_LIST)}
+              />
             </View>
             <Text style={styles.date}>{moment().format('MMMM DD, YYYY')}</Text>
             <View style={{ flex: 0.2 }} />
           </View>
           <Text style={styles.title}>My Todo List</Text>
         </View>
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: moderateScale(250) }}>
-          <View style={styles.todoContainer}>
-            {pendingTasks.length > 0
-              ? pendingTasks.map(item => <TodoItem item={item} key={item.id} />)
-              : null}
+        {todoList.length === 0 && (
+          <View style={styles.placeholderContainer}>
+            <Text style={styles.placeholder}>No tasks for today</Text>
           </View>
-          {pendingTasks.length > 0 && completedTasks.length > 0 && (
-            <Text style={styles.label}>Completed</Text>
-          )}
-          <View style={styles.todoContainer}>
-            {completedTasks.length > 0
-              ? completedTasks.map(item => (
-                  <TodoItem item={item} key={item.id} />
-                ))
-              : null}
-          </View>
-        </ScrollView>
+        )}
+        {(pendingTasks.length > 0 || completedTasks.length > 0) && (
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: moderateScale(250) }}>
+            <View style={styles.todoContainer}>
+              {pendingTasks.length > 0
+                ? pendingTasks.map(item => (
+                    <TodoItem item={item} key={item.id} />
+                  ))
+                : null}
+            </View>
+            {pendingTasks.length > 0 && completedTasks.length > 0 && (
+              <Text style={styles.label}>Completed</Text>
+            )}
+            <View style={styles.todoContainer}>
+              {completedTasks.length > 0
+                ? completedTasks.map(item => (
+                    <TodoItem item={item} key={item.id} />
+                  ))
+                : null}
+            </View>
+          </ScrollView>
+        )}
         <ButtonPrimary
           label="Add New Task"
           onPress={() => navigation.navigate(ROUTES.NEW_TASK)}

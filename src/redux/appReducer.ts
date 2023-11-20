@@ -1,5 +1,7 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { RootState } from './store';
+import moment from 'moment';
+import { DATE_FORMAT } from '../theme';
 
 export enum Status {
   planned = 'planned',
@@ -59,6 +61,25 @@ export const appSlice = createSlice({
 });
 
 export const { addTodo, editTodo, removeTodo, changeStatus } = appSlice.actions;
+
 export const selectTodoList = (store: RootState) => store.todoList;
+
 export const selectTodoById = (id: string) => (store: RootState) =>
   store.todoList.find(e => e.id === id);
+
+export const selectEveryTodo = createSelector([selectTodoList], todoList =>
+  todoList.sort(
+    (a, b) =>
+      moment(a.date, DATE_FORMAT).diff(moment(b.date, DATE_FORMAT)) ||
+      a.time.localeCompare(b.time),
+  ),
+);
+
+export const selectTodoListByDate = (date: string) =>
+  createSelector(
+    [selectTodoList],
+    todoList =>
+      todoList
+        ?.filter(e => e.date === date)
+        .sort((a, b) => a.time.localeCompare(b.time)),
+  );

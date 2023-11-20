@@ -17,13 +17,22 @@ const styles = ScaledSheet.create({
   },
 });
 
-export default () => {
+interface Props {
+  onPress?: () => void;
+}
+
+export default ({ onPress }: Props) => {
   const navigation = useNavigation();
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      navigation.goBack();
+    }
+  };
 
   return (
-    <TouchableOpacity
-      onPress={() => navigation.goBack()}
-      style={styles.container}>
+    <TouchableOpacity onPress={handlePress} style={styles.container}>
       <ArrowBack />
     </TouchableOpacity>
   );

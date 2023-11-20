@@ -10,6 +10,7 @@ import { ROUTES, RootParamList } from '../../navigation';
 
 interface Props {
   item: TodoItem;
+  preview?: boolean;
 }
 
 const styles = ScaledSheet.create({
@@ -35,7 +36,7 @@ const styles = ScaledSheet.create({
   },
 });
 
-export default ({ item }: Props) => {
+export default ({ item, preview = true }: Props) => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<NavigationProp<RootParamList>>();
   const handleCheckboxPress = () => {
@@ -56,8 +57,9 @@ export default ({ item }: Props) => {
       <TouchableOpacity
         onPress={navigateToDetails}
         style={{
+          flex: 0.8,
           flexDirection: 'row',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           alignItems: 'center',
           gap: moderateScale(20),
           opacity: item.status === Status.done ? 0.5 : 1,
@@ -76,7 +78,7 @@ export default ({ item }: Props) => {
             ]}>
             {item.title}
           </Text>
-          {item.time && (
+          {(item.time || !preview) && (
             <Text
               style={[
                 styles.time,
@@ -85,12 +87,29 @@ export default ({ item }: Props) => {
                   textDecorationStyle: 'solid',
                 },
               ]}>
-              {item.time}
+              {preview ? item.time : `${item.date} ${item.time}`}
+            </Text>
+          )}
+          {item.notes && !preview && (
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[
+                styles.time,
+                { marginTop: moderateScale(10), maxWidth: '80%' },
+                item.status === Status.done && {
+                  textDecorationLine: 'line-through',
+                  textDecorationStyle: 'solid',
+                },
+              ]}>
+              {item.notes}
             </Text>
           )}
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleCheckboxPress}>
+      <TouchableOpacity
+        style={{ flex: 0.2, alignItems: 'flex-end' }}
+        onPress={handleCheckboxPress}>
         <Image
           source={
             item.status === Status.done

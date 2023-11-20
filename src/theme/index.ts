@@ -7,3 +7,5 @@ export const COLORS = {
   lightGray: '#E0E0E0',
   black: '#000',
 };
+
+export const DATE_FORMAT = 'DD-MM-YYYY';

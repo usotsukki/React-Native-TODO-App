@@ -6,7 +6,7 @@ import { BackButton, ButtonPrimary, Input } from '../../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import moment from 'moment';
 import uuid from 'react-native-uuid';
-import { COLORS } from '../../theme';
+import { COLORS, DATE_FORMAT } from '../../theme';
 import { moderateScale } from 'react-native-size-matters';
 import { useAppDispatch } from '../../redux/hooks';
 import { Categories, Status, TodoItem, addTodo } from '../../redux/appReducer';
@@ -34,7 +34,7 @@ export default ({
       title,
       category,
       notes: notes || '',
-      date: date || '',
+      date: date || moment().format(DATE_FORMAT),
       time: time || '',
       id: uuid.v4() as string,
       status: Status.planned,

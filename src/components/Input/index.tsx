@@ -10,7 +10,7 @@ import {
   TextInputProps,
 } from 'react-native';
 import { ScaledSheet, moderateScale } from 'react-native-size-matters';
-import { COLORS } from '../../theme';
+import { COLORS, DATE_FORMAT } from '../../theme';
 import moment from 'moment';
 import { IMAGES } from '../../../assets/png';
 import DatePickerModal from '../DatePickerModal';
@@ -94,7 +94,7 @@ const Input = ({
   return (
     <InputContext.Provider value={contextValue}>
       <View style={[styles.container, containerStyle]}>
-        <Text style={styles.label}>{label}</Text>
+        {label && <Text style={styles.label}>{label}</Text>}
         {children}
       </View>
     </InputContext.Provider>
@@ -109,9 +109,9 @@ const InputText = () => {
       {...props}
       value={value}
       onChangeText={onValueChange}
-      placeholder={label}
+      placeholder={label || props?.placeholder}
       placeholderTextColor={COLORS.textOpacity}
-      style={[styles.textInput, props.style]}
+      style={[styles.textInput, props?.style]}
     />
   );
 };
@@ -120,7 +120,7 @@ const InputDate = () => {
   const { label, value, onValueChange } = useInput();
   const [modalVisible, setModalVisible] = React.useState(false);
 
-  const dateValue = value ? moment(value, 'DD-MM-YYYY').toDate() : new Date();
+  const dateValue = value ? moment(value, DATE_FORMAT).toDate() : new Date();
 
   return (
     <TouchableOpacity
@@ -135,7 +135,7 @@ const InputDate = () => {
         mode={'date'}
         closeModal={() => setModalVisible(false)}
         onChangeDate={date =>
-          onValueChange && onValueChange(moment(date).format('DD-MM-YYYY'))
+          onValueChange && onValueChange(moment(date).format(DATE_FORMAT))
         }
       />
     </TouchableOpacity>
