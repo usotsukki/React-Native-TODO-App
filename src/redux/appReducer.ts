@@ -38,6 +38,11 @@ export const appSlice = createSlice({
     addTodo: (state: InitialState, action: PayloadAction<TodoItem>) => {
       state.todoList = [...state.todoList, action.payload];
     },
+    editTodo: (state: InitialState, action: PayloadAction<TodoItem>) => {
+      state.todoList = state.todoList.map(e =>
+        e.id === action.payload.id ? action.payload : e,
+      );
+    },
     removeTodo: (state: InitialState, action: PayloadAction<string>) => {
       state.todoList = state.todoList.filter(e => e.id !== action.payload);
     },
@@ -53,5 +58,7 @@ export const appSlice = createSlice({
   },
 });
 
-export const { addTodo, removeTodo, changeStatus } = appSlice.actions;
+export const { addTodo, editTodo, removeTodo, changeStatus } = appSlice.actions;
 export const selectTodoList = (store: RootState) => store.todoList;
+export const selectTodoById = (id: string) => (store: RootState) =>
+  store.todoList.find(e => e.id === id);

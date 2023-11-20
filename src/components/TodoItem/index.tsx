@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Status, TodoItem, changeStatus } from '../../redux/appReducer';
 import { ScaledSheet, moderateScale } from 'react-native-size-matters';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { COLORS } from '../../theme';
 import { IMAGES } from '../../../assets/png';
 import { useAppDispatch } from '../../redux/hooks';
+import { ROUTES, RootParamList } from '../../navigation';
 
 interface Props {
   item: TodoItem;
@@ -35,6 +37,7 @@ const styles = ScaledSheet.create({
 
 export default ({ item }: Props) => {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<NavigationProp<RootParamList>>();
   const handleCheckboxPress = () => {
     dispatch(
       changeStatus({
@@ -44,9 +47,14 @@ export default ({ item }: Props) => {
     );
   };
 
+  const navigateToDetails = () => {
+    navigation.navigate(ROUTES.TASK_DETAILS, { id: item.id });
+  };
+
   return (
     <View style={styles.container} key={item.id}>
-      <View
+      <TouchableOpacity
+        onPress={navigateToDetails}
         style={{
           flexDirection: 'row',
           justifyContent: 'center',
@@ -81,7 +89,7 @@ export default ({ item }: Props) => {
             </Text>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
       <TouchableOpacity onPress={handleCheckboxPress}>
         <Image
           source={
